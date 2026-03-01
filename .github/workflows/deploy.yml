@@ -66,8 +66,7 @@ jobs:
         run: |
           aws eks update-kubeconfig \
             --region $AWS_REGION \
-            --name $EKS_CLUSTER_NAME \
-            --role-arn ${{ secrets.AWS_GITHUB_ROLE }}
+            --name $EKS_CLUSTER_NAME
 
       # 8️⃣ Deploy Main App via Helm
       - name: Deploy Main App
