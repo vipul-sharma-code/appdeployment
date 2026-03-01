@@ -67,6 +67,10 @@ jobs:
           aws eks update-kubeconfig \
             --region $AWS_REGION \
             --name $EKS_CLUSTER_NAME
+      
+      - name: Debug Identity
+        run: |
+          aws sts get-caller-identity
 
       # 8️⃣ Deploy Main App via Helm
       - name: Deploy Main App
