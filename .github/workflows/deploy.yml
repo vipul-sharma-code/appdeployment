@@ -1,4 +1,4 @@
-name: Deploy to EKS
+name: Build & Deploy to EKS
 
 on:
   push:
@@ -6,32 +6,93 @@ on:
       - development
       - main
 
+env:
+  AWS_REGION: us-west-2
+  EKS_CLUSTER_NAME: eks-cluster-v2
+  ECR_MAIN_REPO: main-app
+  ECR_MICRO_REPO: microservice
+  IMAGE_TAG: ${{ github.sha }}
+
 jobs:
   deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write     # Required for OIDC
+      contents: read
+
     steps:
-      - uses: actions/checkout@v3
+      # 1️⃣ Checkout
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v2
+      # 2️⃣ Configure AWS (OIDC - No Secrets Needed)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE }}
-          aws-region: us-west-2
+          role-to-assume: ${{ secrets.AWS_GITHUB_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to ECR
-        run: |
-          aws ecr get-login-password | docker login ...
+      # 3️⃣ Login to ECR
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and Push
+      # 4️⃣ Set Namespace Based on Branch
+      - name: Set Deployment Namespace
+        id: vars
         run: |
-          docker build -t main-app .
-          docker push ...
-
-      - name: Deploy via Helm
-        run: |
-          if [[ $GITHUB_REF == 'refs/heads/development' ]]; then
-            helm upgrade --install main-app ./helm/main-app -n dev
-          else
-            helm upgrade --install main-app ./helm/main-app -n staging
+          if [[ "${GITHUB_REF}" == "refs/heads/development" ]]; then
+            echo "namespace=dev" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "namespace=staging" >> $GITHUB_OUTPUT
           fi
+
+      # 5️⃣ Build & Push Main App
+      - name: Build & Push Main App Image
+        run: |
+          docker build -t ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MAIN_REPO }}:${{ env.IMAGE_TAG }} ./main-app
+          docker push ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MAIN_REPO }}:${{ env.IMAGE_TAG }}
+
+      # 6️⃣ Build & Push Microservice
+      - name: Build & Push Microservice Image
+        run: |
+          docker build -t ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MICRO_REPO }}:${{ env.IMAGE_TAG }} ./microservice
+          docker push ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MICRO_REPO }}:${{ env.IMAGE_TAG }}
+
+      # 7️⃣ Update kubeconfig
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --region $AWS_REGION \
+            --name $EKS_CLUSTER_NAME
+
+      # 8️⃣ Deploy Main App via Helm
+      - name: Deploy Main App
+        run: |
+          helm upgrade --install main-app ./helm/main-app \
+            --namespace ${{ steps.vars.outputs.namespace }} \
+            --create-namespace \
+            --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MAIN_REPO }} \
+            --set image.tag=${{ env.IMAGE_TAG }}
+
+      # 9️⃣ Deploy Microservice via Helm
+      - name: Deploy Microservice
+        run: |
+          helm upgrade --install microservice ./helm/microservice \
+            --namespace ${{ steps.vars.outputs.namespace }} \
+            --create-namespace \
+            --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MICRO_REPO }} \
+            --set image.tag=${{ env.IMAGE_TAG }}
+
+      # 🔟 Verify Rollout
+      - name: Verify Deployment Rollout
+        run: |
+          kubectl rollout status deployment/main-app -n ${{ steps.vars.outputs.namespace }}
+          kubectl rollout status deployment/microservice -n ${{ steps.vars.outputs.namespace }}
+
+      # 1️⃣1️⃣ Print Service Info
+      - name: Get Services
+        run: |
+          kubectl get svc -n ${{ steps.vars.outputs.namespace }}
