@@ -1,0 +1,37 @@
+name: Deploy to EKS
+
+on:
+  push:
+    branches:
+      - development
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: us-west-2
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password | docker login ...
+
+      - name: Build and Push
+        run: |
+          docker build -t main-app .
+          docker push ...
+
+      - name: Deploy via Helm
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/development' ]]; then
+            helm upgrade --install main-app ./helm/main-app -n dev
+          else
+            helm upgrade --install main-app ./helm/main-app -n staging
+          fi
