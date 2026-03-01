@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: ""
@@ -26,8 +26,8 @@ resources:
 
 autoscaling:
   enabled: true
-  minReplicas: 2
-  maxReplicas: 5
+  minReplicas: 1
+  maxReplicas: 2
   targetCPUUtilizationPercentage: 70
 
 externalSecret:
@@ -41,11 +41,11 @@ podDisruptionBudget:
 
 serviceAccount:
   create: true
-  name: ""
+  name: "sa-mainapp"
 
 env:
   NODE_ENV: production
 
-externalSecret:
-  secretName: microservice-env
-  awsSecretKey: dev/microservice
+#externalSecret:
+#  secretName: microservice-env
+#  awsSecretKey: dev/microservice

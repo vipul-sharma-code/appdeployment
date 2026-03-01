@@ -82,13 +82,13 @@ jobs:
             --set image.tag=${{ env.IMAGE_TAG }}
 
       # 9️⃣ Deploy Microservice via Helm
-      - name: Deploy Microservice
-        run: |
-          helm upgrade --install microservice ./helm/microservice \
-            --namespace ${{ steps.vars.outputs.namespace }} \
-            --create-namespace \
-            --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MICRO_REPO }} \
-            --set image.tag=${{ env.IMAGE_TAG }}
+      #- name: Deploy Microservice
+      #  run: |
+      #    helm upgrade --install microservice ./helm/microservice \
+      #      --namespace ${{ steps.vars.outputs.namespace }} \
+      #      --create-namespace \
+      #      --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MICRO_REPO }} \
+      #      --set image.tag=${{ env.IMAGE_TAG }}
 
       # 🔟 Verify Rollout
       - name: Verify Deployment Rollout
