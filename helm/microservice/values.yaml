@@ -1,0 +1,41 @@
+replicaCount: 2
+
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+resources:
+  requests:
+    cpu: "150m"
+    memory: "256Mi"
+  limits:
+    cpu: "400m"
+    memory: "512Mi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 70
+
+externalSecret:
+  enabled: true
+  secretName: microservice-env
+  awsSecretKey: dev/microservice
+  refreshInterval: 1m
+
+podDisruptionBudget:
+  minAvailable: 1
+
+serviceAccount:
+  create: true
+  name: ""
+
+env:
+  NODE_ENV: production

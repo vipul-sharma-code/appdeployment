@@ -1,0 +1,51 @@
+replicaCount: 2
+
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: alb
+  host: api.example.com
+  path: /
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+externalSecret:
+  enabled: true
+  secretName: main-app-env
+  awsSecretKey: dev/main-app
+  refreshInterval: 1m
+
+podDisruptionBudget:
+  minAvailable: 1
+
+serviceAccount:
+  create: true
+  name: ""
+
+env:
+  NODE_ENV: production
+
+externalSecret:
+  secretName: microservice-env
+  awsSecretKey: dev/microservice
