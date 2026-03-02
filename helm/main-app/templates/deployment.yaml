@@ -19,7 +19,7 @@ spec:
       annotations:
         reloader.stakater.com/auto: "true"
     spec:
-      serviceAccountName: {{ .Values.serviceAccount.name | default "default" }}
+      serviceAccountName: {{ include "microservice.fullname" . }}
       containers:
         - name: main-app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
