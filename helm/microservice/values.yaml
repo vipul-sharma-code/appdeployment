@@ -25,7 +25,7 @@ autoscaling:
   targetCPUUtilizationPercentage: 70
 
 externalSecret:
-  enabled: true
+  enabled: false
   name: aws-secrets-manager
   refreshInterval: 1m
   secretStoreName: aws-secrets-manager
