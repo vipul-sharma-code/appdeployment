@@ -35,7 +35,7 @@ externalSecret:
   name: aws-secrets-manager
   refreshInterval: 1m
   secretStoreName: aws-secrets-manager
-  targetSecretName: dev/main-app-env
+  targetSecretName: dev-main-app-env
 
 podDisruptionBudget:
   minAvailable: 1
