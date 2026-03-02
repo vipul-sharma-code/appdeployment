@@ -1,7 +1,7 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: main-app-secret
+  name: aws-secrets-manager
 spec:
   refreshInterval: 1m
   secretStoreRef:

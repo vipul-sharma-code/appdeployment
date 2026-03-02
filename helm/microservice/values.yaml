@@ -26,9 +26,10 @@ autoscaling:
 
 externalSecret:
   enabled: true
-  secretName: microservice-env
-  awsSecretKey: dev/microservice
+  name: aws-secrets-manager
   refreshInterval: 1m
+  secretStoreName: aws-secrets-manager
+  targetSecretName: dev/microservice-app-env
 
 podDisruptionBudget:
   minAvailable: 1
