@@ -67,6 +67,10 @@ jobs:
           aws eks update-kubeconfig \
             --region $AWS_REGION \
             --name $EKS_CLUSTER_NAME
+      
+      - name: Debug Identity
+        run: |
+          aws sts get-caller-identity
 
       # 8️⃣ Deploy Main App via Helm
       - name: Deploy Main App
@@ -74,7 +78,7 @@ jobs:
           helm upgrade --install main-app ./helm/main-app \
             --namespace ${{ steps.vars.outputs.namespace }} \
             --create-namespace \
-            --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MAIN_REPO }} \
+            --set image.repository=${{ steps.ecr-login.outputs.registry }}/app/${{ env.ECR_MAIN_REPO }} \
             --set image.tag=${{ env.IMAGE_TAG }}
 
       # 9️⃣ Deploy Microservice via Helm
@@ -83,14 +87,14 @@ jobs:
           helm upgrade --install microservice ./helm/microservice \
             --namespace ${{ steps.vars.outputs.namespace }} \
             --create-namespace \
-            --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MICRO_REPO }} \
+            --set image.repository=${{ steps.ecr-login.outputs.registry }}/app/${{ env.ECR_MICRO_REPO }} \
             --set image.tag=${{ env.IMAGE_TAG }}
 
       # 🔟 Verify Rollout
       - name: Verify Deployment Rollout
         run: |
-          kubectl rollout status deployment/main-app -n ${{ steps.vars.outputs.namespace }}
-          kubectl rollout status deployment/microservice -n ${{ steps.vars.outputs.namespace }}
+          kubectl rollout status deployment/main-app-main-app -n ${{ steps.vars.outputs.namespace }}
+          kubectl rollout status deployment/microservice-microservice -n ${{ steps.vars.outputs.namespace }}
 
       # 1️⃣1️⃣ Print Service Info
       - name: Get Services

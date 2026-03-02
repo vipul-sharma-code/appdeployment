@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "microservice.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: {{ include "microservice.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "microservice.name" . }}
+      annotations:
+        reloader.stakater.com/auto: "true"
+    spec:
+      serviceAccountName: {{ include "microservice.fullname" . }}
+      containers:
+        - name: microservice
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3001
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.env.NODE_ENV }}
