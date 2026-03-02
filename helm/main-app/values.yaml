@@ -13,7 +13,7 @@ service:
 ingress:
   enabled: true
   className: nginx
-  host: mainapp.apptest.com
+  host: a1fc1134bcb3a4c94ba6de2582003fd7-1881243468.us-west-2.elb.amazonaws.com
   path: /
 
 resources:
