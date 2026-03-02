@@ -78,7 +78,7 @@ jobs:
           helm upgrade --install main-app ./helm/main-app \
             --namespace ${{ steps.vars.outputs.namespace }} \
             --create-namespace \
-            --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MAIN_REPO }} \
+            --set image.repository=${{ steps.ecr-login.outputs.registry }}/app/${{ env.ECR_MAIN_REPO }} \
             --set image.tag=${{ env.IMAGE_TAG }}
 
       # 9️⃣ Deploy Microservice via Helm
@@ -87,7 +87,7 @@ jobs:
           helm upgrade --install microservice ./helm/microservice \
             --namespace ${{ steps.vars.outputs.namespace }} \
             --create-namespace \
-            --set image.repository=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_MICRO_REPO }} \
+            --set image.repository=${{ steps.ecr-login.outputs.registry }}/app/${{ env.ECR_MICRO_REPO }} \
             --set image.tag=${{ env.IMAGE_TAG }}
 
       # 🔟 Verify Rollout
