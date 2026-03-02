@@ -1,0 +1,52 @@
+replicaCount: 1
+
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx-staging
+  host: aa91695df1b8643c388bac686a18469e-100601753.us-west-2.elb.amazonaws.com
+  path: /
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "200m"
+    memory: "512Mi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 70
+
+externalSecret:
+  enabled: false
+  name: aws-secrets-manager
+  refreshInterval: 1m
+  secretStoreName: aws-secrets-manager
+  targetSecretName: dev-main-app-env
+
+podDisruptionBudget:
+  minAvailable: 1
+
+serviceAccount:
+  create: true
+  name: "sa-mainapp"
+
+env:
+  NODE_ENV: production
+
+#externalSecret:
+#  secretName: microservice-env
+#  awsSecretKey: dev/microservice
