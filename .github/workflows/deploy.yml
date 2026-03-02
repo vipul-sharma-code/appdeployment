@@ -93,8 +93,8 @@ jobs:
       # 🔟 Verify Rollout
       - name: Verify Deployment Rollout
         run: |
-          kubectl rollout status deployment/main-app -n ${{ steps.vars.outputs.namespace }}
-          kubectl rollout status deployment/microservice -n ${{ steps.vars.outputs.namespace }}
+          kubectl rollout status deployment/main-app-main-app -n ${{ steps.vars.outputs.namespace }}
+          kubectl rollout status deployment/microservice-microservice -n ${{ steps.vars.outputs.namespace }}
 
       # 1️⃣1️⃣ Print Service Info
       - name: Get Services
