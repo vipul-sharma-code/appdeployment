@@ -13,8 +13,7 @@ export class AppService {
 
   async getHelloFromMicroservice(): Promise<string> {
     try {
-      const microserviceUrl =
-        process.env.MICROSERVICE_URL || "http://localhost:3001"; // Updated to use MICROSERVICE_URL
+      const microserviceUrl = "http://microservice.dev.svc.cluster.local:3001";
       const response = await firstValueFrom(
         this.httpService.get(`${microserviceUrl}/greeting`),
       );
