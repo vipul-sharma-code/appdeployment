@@ -29,9 +29,9 @@ spec:
           env:
             - name: NODE_ENV
               value: {{ .Values.env.NODE_ENV }}
-          envFrom:
-            - secretRef:
-                name: {{ .Values.externalSecret.targetSecretName }}
+          #envFrom:
+          #  - secretRef:
+          #      name: {{ .Values.externalSecret.targetSecretName }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
