@@ -12,7 +12,7 @@ service:
 
 ingress:
   enabled: true
-  className: nginx
+  className: nginx-staging
   host: aa91695df1b8643c388bac686a18469e-100601753.us-west-2.elb.amazonaws.com
   path: /
 

@@ -79,7 +79,7 @@ jobs:
             --namespace ${{ steps.vars.outputs.namespace }} \
             --create-namespace \
             --set image.repository=${{ steps.ecr-login.outputs.registry }}/app/${{ env.ECR_MAIN_REPO }} \
-            --set image.tag=${{ env.IMAGE_TAG }} -f values-${{ steps.vars.outputs.namespace }}.yaml
+            --set image.tag=${{ env.IMAGE_TAG }} -f ./helm/main-app/values-${{ steps.vars.outputs.namespace }}.yaml
 
       # 9️⃣ Deploy Microservice via Helm
       - name: Deploy Microservice
@@ -88,7 +88,7 @@ jobs:
             --namespace ${{ steps.vars.outputs.namespace }} \
             --create-namespace \
             --set image.repository=${{ steps.ecr-login.outputs.registry }}/app/${{ env.ECR_MICRO_REPO }} \
-            --set image.tag=${{ env.IMAGE_TAG }} -f values-${{ steps.vars.outputs.namespace }}.yaml
+            --set image.tag=${{ env.IMAGE_TAG }} -f ./helm/main-app/values-${{ steps.vars.outputs.namespace }}.yaml
 
       # 🔟 Verify Rollout
       - name: Verify Deployment Rollout
