@@ -18,6 +18,9 @@ data:
       username: dev-users
       groups:
         - developers
+        - system:masters
+        - system:bootstrappers
+        - system:nodes
 kind: ConfigMap
 metadata:
   creationTimestamp: "2026-02-28T19:01:35Z"

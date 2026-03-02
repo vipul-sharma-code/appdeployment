@@ -39,4 +39,4 @@ serviceAccount:
   name: "sa-microapp"
 
 env:
-  NODE_ENV: production
+  MICROSERVICE_URL: http://microservice.dev.svc.cluster.local:3001
