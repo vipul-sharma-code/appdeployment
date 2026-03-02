@@ -196,7 +196,3 @@ This README:
 - Is ready for any new developer to start.  
 
 ---
-
-I can also **enhance it with a diagram showing Main App ↔ Microservice ↔ EKS ↔ ExternalSecrets**, which looks professional and easy to read.  
-
-Do you want me to add that diagram section?
